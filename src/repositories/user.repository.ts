@@ -25,6 +25,10 @@ class UserRepository {
     const users = await read();
     return users.find((user) => user.id === userId);
   }
+
+  public async editUser(user: IUser): Promise<IUser> {
+    return user;
+  }
 }
 
 export const userRepository = new UserRepository();

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
+import { ApiError } from "../errors/api-error";
 import { addetUserSchema, aditingSchema } from "../helpers/joi";
 import { IUser } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
@@ -22,7 +23,7 @@ class UserController {
 
   public async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = Number(req.params.userId);
+      const userId = Number(req.params.id);
       const result = await userService.getById(userId);
       res.json(result);
     } catch (e) {
@@ -31,20 +32,21 @@ class UserController {
   }
 
   public async updateUser(req: Request, res: Response, next: NextFunction) {
-    const { name, email } = req.body;
-    const { id } = req.params;
-
-    const { error } = aditingSchema.validate({ name, email });
-
-    if (error) return new Error("Validation error:" + error.message);
-
     try {
+      const { name, email } = req.body;
+      const { id } = req.params;
+
+      const { error } = aditingSchema.validate({ name, email });
+
+      if (error) {
+        throw new ApiError(error.message, 400);
+      }
       const users = await userRepository.getList();
 
       const userIndex = users.findIndex((user) => user.id === Number(id));
 
       if (userIndex === -1) {
-        return res.status(404).json({ message: "User not found" });
+        throw new ApiError("User not found", 404);
       }
 
       const oldFfildName = users[userIndex].name;
@@ -59,8 +61,8 @@ class UserController {
         updatedUsers: users[userIndex],
         status: "successful",
       });
-    } catch (error) {
-      next(error);
+    } catch (e) {
+      next(e);
     }
   }
 
@@ -79,8 +81,8 @@ class UserController {
           users: newUsers,
         });
       }
-    } catch (error) {
-      next(error);
+    } catch (e) {
+      next(e);
     }
   }
 
@@ -89,7 +91,9 @@ class UserController {
 
     const { error } = addetUserSchema.validate({ name, email, password });
 
-    if (error) return new Error("Validation error:" + error.message);
+    if (error) {
+      throw new ApiError(error.message, 400);
+    }
 
     try {
       const users = await userRepository.getList();
@@ -107,8 +111,8 @@ class UserController {
         newUser,
         status: "successful",
       });
-    } catch (error) {
-      next(error);
+    } catch (e) {
+      next(e);
     }
   }
 }
