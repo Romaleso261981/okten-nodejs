@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
 import bcrypt from "bcrypt";
 
 import { IUser } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
-export const getAllUsersService = async (): Promise<IUser[] | null> => {
+export const getAllUsers = async (): Promise<IUser[] | null> => {
   const result = await User.find();
   if (!result) {
     throw new Error("Users retrieved failed");
@@ -29,4 +30,47 @@ export const createNewUser = async (dto: IUser): Promise<IUser> => {
   });
 
   return newUser;
+};
+
+export const getSingleUser = async (userId: string): Promise<IUser> => {
+  const result = await User.findById(userId);
+  if (!result) {
+    throw new Error("User not found !");
+  }
+
+  return result;
+};
+
+export const deleteUserById = async (userId: string): Promise<IUser> => {
+  const isExist = await User.findById(userId);
+  if (!isExist) {
+    throw new Error("User not found !");
+  }
+
+  const result = await User.findByIdAndDelete(userId);
+  if (!result) {
+    throw new Error("User delete failed");
+  }
+  return result;
+};
+
+export const updateUserHandler = async (
+  id: string,
+  payload: Partial<IUser>,
+): Promise<IUser | null> => {
+  const isExist = await User.findById(id);
+
+  if (!isExist) {
+    throw new Error("User not found !");
+  }
+
+  const updatedUserData: Partial<IUser> = { ...payload };
+
+  const result = await User.findOneAndUpdate({ _id: id }, updatedUserData, {
+    new: true,
+  });
+  if (!result) {
+    throw new Error("User update failed");
+  }
+  return result;
 };

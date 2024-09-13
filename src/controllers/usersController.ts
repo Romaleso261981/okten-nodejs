@@ -1,16 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 
-import { userRepository } from "../repositories/user.repository";
-import { userService } from "../services/user.service";
-import { createNewUser, getAllUsers } from "../services/user.service-mongoDB";
+import {
+  createNewUser,
+  deleteUserById,
+  getAllUsers,
+  getSingleUser,
+  updateUserHandler,
+} from "../services/user.service-mongoDB";
 
 class UserController {
   public async getAllUsers(_: Request, res: Response, next: NextFunction) {
     try {
-      const users = await userRepository.getList();
-
-      const userMongoDB = await getAllUsersService();
-      console.log("userMongoDB", userMongoDB);
+      // const users = await userRepository.getList();
+      const users = await getAllUsers();
 
       return res.status(201).json({
         status: "successful",
@@ -23,7 +25,9 @@ class UserController {
 
   public async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await userService.getById(Number(req.params.id));
+      const result = await getSingleUser(req.params.id);
+      // const result = await userService.getById(Number(req.params.id));
+
       return res.status(201).json({
         result,
         status: "successful",
@@ -38,7 +42,8 @@ class UserController {
       const dto = req.body;
       const { id: userId } = req.params;
 
-      const updatedUsers = userService.updateUser({ dto, userId });
+      // const updatedUsers = userService.updateUser({ dto, userId });
+      const updatedUsers = await updateUserHandler(userId, dto);
 
       return res.status(201).json({
         updatedUsers,
@@ -55,7 +60,8 @@ class UserController {
     next: NextFunction,
   ) {
     try {
-      const newUsers = userService.removeUserById(Number(req.params.id));
+      // const newUsers = userService.removeUserById(Number(req.params.id));
+      const newUsers = await deleteUserById(req.params.id);
 
       return res.status(200).json({
         status: "successful",
@@ -70,9 +76,8 @@ class UserController {
     const dto = req.body;
 
     try {
-      const newUser = userService.create(dto);
-
-      createNewUser(dto);
+      // const newUser = userService.create(dto);
+      const newUser = await createNewUser(dto);
 
       return res.status(201).json({
         newUser,
