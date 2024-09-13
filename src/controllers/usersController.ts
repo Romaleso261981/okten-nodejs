@@ -2,11 +2,15 @@ import { NextFunction, Request, Response } from "express";
 
 import { userRepository } from "../repositories/user.repository";
 import { userService } from "../services/user.service";
+import { createNewUser, getAllUsers } from "../services/user.service-mongoDB";
 
 class UserController {
   public async getAllUsers(_: Request, res: Response, next: NextFunction) {
     try {
       const users = await userRepository.getList();
+
+      const userMongoDB = await getAllUsersService();
+      console.log("userMongoDB", userMongoDB);
 
       return res.status(201).json({
         status: "successful",
@@ -67,6 +71,8 @@ class UserController {
 
     try {
       const newUser = userService.create(dto);
+
+      createNewUser(dto);
 
       return res.status(201).json({
         newUser,
