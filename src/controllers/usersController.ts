@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ApiError } from "../errors/api-error";
-import { addetUserSchema, aditingSchema } from "../helpers/joi";
-import { IUser } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
-import { write } from "../services/fs.service";
 import { userService } from "../services/user.service";
 
 class UserController {
@@ -23,9 +19,11 @@ class UserController {
 
   public async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = Number(req.params.id);
-      const result = await userService.getById(userId);
-      res.json(result);
+      const result = await userService.getById(Number(req.params.id));
+      return res.status(201).json({
+        result,
+        status: "successful",
+      });
     } catch (e) {
       next(e);
     }
@@ -33,32 +31,13 @@ class UserController {
 
   public async updateUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, email } = req.body;
-      const { id } = req.params;
+      const dto = req.body;
+      const { id: userId } = req.params;
 
-      const { error } = aditingSchema.validate({ name, email });
-
-      if (error) {
-        throw new ApiError(error.message, 400);
-      }
-      const users = await userRepository.getList();
-
-      const userIndex = users.findIndex((user) => user.id === Number(id));
-
-      if (userIndex === -1) {
-        throw new ApiError("User not found", 404);
-      }
-
-      const oldFfildName = users[userIndex].name;
-      const oldFfildEmail = users[userIndex].email;
-
-      users[userIndex].name = name ?? oldFfildName;
-      users[userIndex].email = email ?? oldFfildEmail;
-
-      await write(users);
+      const updatedUsers = userService.updateUser({ dto, userId });
 
       return res.status(201).json({
-        updatedUsers: users[userIndex],
+        updatedUsers,
         status: "successful",
       });
     } catch (e) {
@@ -72,40 +51,22 @@ class UserController {
     next: NextFunction,
   ) {
     try {
-      const { id } = req.params;
-      if (id) {
-        const newUsers = await userService.removeUserById(Number(id));
+      const newUsers = userService.removeUserById(Number(req.params.id));
 
-        return res.status(200).json({
-          status: "successful",
-          users: newUsers,
-        });
-      }
+      return res.status(200).json({
+        status: "successful",
+        users: newUsers,
+      });
     } catch (e) {
       next(e);
     }
   }
 
   public async addedUser(req: Request, res: Response, next: NextFunction) {
-    const { name, email, password } = req.body;
-
-    const { error } = addetUserSchema.validate({ name, email, password });
-
-    if (error) {
-      throw new ApiError(error.message, 400);
-    }
+    const dto = req.body;
 
     try {
-      const users = await userRepository.getList();
-      let id: number = 1;
-
-      if (users.length !== 0) {
-        id = users[users.length - 1].id + 1;
-      }
-
-      const newUser: IUser = { id, name, email, password };
-
-      userRepository.create(newUser);
+      const newUser = userService.create(dto);
 
       return res.status(201).json({
         newUser,

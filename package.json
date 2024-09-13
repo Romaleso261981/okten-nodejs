@@ -18,10 +18,14 @@
   },
   "homepage": "https://github.com/Romaleso261981/okten-nodejs#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.20.0",
-    "joi": "^17.13.3"
+    "http-status": "^1.7.4",
+    "joi": "^17.13.3",
+    "mongoose": "^8.6.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.5.4",
     "@typescript-eslint/eslint-plugin": "^8.5.0",
