@@ -11,7 +11,7 @@ dotenv.config();
 
 let server: Server;
 
-export async function main() {
+export async function connectMongoDB() {
   try {
     await mongoose.connect(process.env.DB_URI);
     server = app.listen(process.env.PORT, (): void => {
