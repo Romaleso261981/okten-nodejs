@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import cors from "cors";
+import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
@@ -7,6 +8,8 @@ import { ApiError } from "./errors/api-error";
 import { connectMongoDB } from "./helpers/connectDB";
 import { sendRes } from "./helpers/sendRes";
 import { usersRouter } from "./routers/usersRouter";
+
+dotenv.config();
 
 export const app = express();
 

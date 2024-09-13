@@ -1,13 +1,10 @@
 /* eslint-disable no-console */
-import dotenv from "dotenv";
 import { Server } from "http";
 import mongoose from "mongoose";
 
 // import config from "../config";
 import { ApiError } from "../errors/api-error";
 import { app } from "../server";
-
-dotenv.config();
 
 let server: Server;
 
