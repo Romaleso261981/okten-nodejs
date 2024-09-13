@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Romaleso261981/okten-nodejs#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.20.0",
     "http-status": "^1.7.4",
     "joi": "^17.13.3",

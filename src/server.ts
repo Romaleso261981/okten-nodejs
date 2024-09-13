@@ -4,17 +4,18 @@ import express, { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
 import { ApiError } from "./errors/api-error";
+import { main } from "./helpers/connectDB";
 import { sendRes } from "./helpers/sendRes";
 import { usersRouter } from "./routers/usersRouter";
 
-const app = express();
+export const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Testing API
+main();
+
 app.get("/", (_: Request, res: Response) => {
   sendRes(res, {
     statusCode: httpStatus.OK,
@@ -36,8 +37,4 @@ app.use(
 process.on("uncaughtException", (error) => {
   console.error("uncaughtException", error.message, error.stack);
   process.exit(1);
-});
-
-app.listen(8080, () => {
-  console.log("Server is running on http://localhost:3000");
 });
