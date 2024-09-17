@@ -3,7 +3,11 @@ import { User } from "../models/user.model";
 
 class UserRepository {
   public async getList(): Promise<IUser[]> {
-    return await User.find();
+    const result = await User.find();
+    if (!result) {
+      throw new Error("Users retrieved failed");
+    }
+    return result;
   }
 
   public async create(dto: Partial<IUser>): Promise<IUser> {
@@ -21,11 +25,25 @@ class UserRepository {
   }
 
   public async getById(userId: string): Promise<IUser | null> {
-    return await User.findById(userId);
+    const result = await User.findById(userId);
+    if (!result) {
+      throw new Error("User not found !");
+    }
+    return result;
   }
 
   public async deleteUser(userId: string): Promise<IUser> {
-    return await User.findByIdAndDelete(userId);
+    const isExist = await User.findByIdAndDelete(userId);
+    if (!isExist) {
+      throw new Error("User not found !");
+    }
+
+    const result = await User.findOneAndDelete({ _id: userId });
+    if (!result) {
+      throw new Error("User delete failed");
+    }
+
+    return result;
   }
 
   public async updateUser(id: string, dto: Partial<IUser>): Promise<IUser> {

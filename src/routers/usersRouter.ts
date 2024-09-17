@@ -2,6 +2,7 @@ import express from "express";
 
 import { userController } from "../controllers/usersController";
 import { commonMiddleware } from "../middlewares/common.middleware";
+import { userValidation } from "../middlewares/validations/user.validation";
 
 const usersRouter = express.Router();
 
@@ -13,7 +14,7 @@ usersRouter.get(
 );
 usersRouter.post(
   "/",
-  commonMiddleware.isBodyValidAdedeUser(),
+  userValidation.isBodyValidAdedeUser(),
   userController.addedUser,
 );
 usersRouter.delete(
@@ -24,7 +25,7 @@ usersRouter.delete(
 usersRouter.put(
   "/:userId",
   commonMiddleware.isIdValid("userId"),
-  commonMiddleware.isBodyValidEditUser(),
+  userValidation.isBodyValidEditUser(),
   userController.updateUser,
 );
 
