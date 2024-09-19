@@ -7,15 +7,16 @@ const router = Router();
 
 router.post(
   "/signup",
-  userValidation.isBodyValidAdedeUser(),
+  userValidation.validationSignUpUser(),
   authController.signUp,
 );
 
 router.post(
   "/signin",
-  userValidation.isBodyValidAdedeUser(),
+  userValidation.validationSignInUser(),
   authController.signIn,
 );
+
 router.post("/refresh", authController.refreshToken);
 
 export const authRouter = router;

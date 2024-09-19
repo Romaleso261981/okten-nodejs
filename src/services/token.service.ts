@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
 import * as jsonwebtoken from "jsonwebtoken";
 
 import configs from "../configs";
@@ -15,18 +16,8 @@ class TokenService {
       configs.ACCESS_REFRESH_KEY,
       { expiresIn: configs.JWT_REFRESH_EXPIRATION },
     );
-    return { accessToken, refreshToken };
-  }
 
-  public verifyAccessToken(accessToken: string): ITokenPayload {
-    try {
-      return jsonwebtoken.verify(
-        accessToken,
-        configs.ACCESS_SECRET_KEY,
-      ) as ITokenPayload;
-    } catch (e) {
-      throw new ApiError("Invalid token", 401);
-    }
+    return { accessToken, refreshToken };
   }
 
   public verifyRefreshToken(refreshToken: string): ITokenPayload {

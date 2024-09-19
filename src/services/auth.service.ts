@@ -1,6 +1,7 @@
 import { ApiError } from "../errors/api-error";
 import { ITokenPair } from "../interfaces/token.interface";
 import { ISignIn, IUser } from "../interfaces/user.interface";
+import { commonMiddleware } from "../middlewares/common.middleware";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 import { passwordService } from "./password.service";
@@ -19,7 +20,7 @@ class AuthService {
       role: user.role,
     });
 
-    await tokenRepository.create({ ...tokens, _userId: user._id });
+    // await tokenRepository.create({ ...tokens, _userId: user._id });
     return { user, tokens };
   }
 
@@ -35,15 +36,20 @@ class AuthService {
       dto.password,
       user.password,
     );
+
     if (!isPasswordCorrect) {
       throw new ApiError("Invalid credentials", 401);
     }
+
+    await tokenRepository.deleteByUserId(user._id);
 
     const tokens = tokenService.generateTokens({
       userId: user._id,
       role: user.role,
     });
+
     await tokenRepository.create({ ...tokens, _userId: user._id });
+
     return { user, tokens };
   }
 
@@ -55,7 +61,7 @@ class AuthService {
       throw new ApiError("invalid authorization header", 404);
     }
 
-    const { userId } = tokenService.verifyAccessToken(token);
+    const { userId } = commonMiddleware.verifyAccessToken(token);
 
     if (!userId) {
       throw new ApiError(
@@ -83,19 +89,15 @@ class AuthService {
   public async refreshAccessToken(refreshToken: string): Promise<ITokenPair> {
     const { userId } = tokenService.verifyRefreshToken(refreshToken);
 
-    if (!userId) {
-      throw new Error("Invalid token");
-    }
-
-    const user = userRepository.getById(userId);
+    const user = await userRepository.getById(userId);
 
     if (!user) {
       throw new Error("User not found");
     }
 
     const tokens = tokenService.generateTokens({
-      userId: (await user)._id,
-      role: (await user).role,
+      userId: user._id,
+      role: user.role,
     });
 
     return tokens as ITokenPair;

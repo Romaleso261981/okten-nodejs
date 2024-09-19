@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { isObjectIdOrHexString } from "mongoose";
 
-import config from "../../configs";
+import configs from "../../configs";
 import { ApiError } from "../../errors/api-error";
-import { addetUserSchema, aditingSchema } from "../../helpers/joi";
+import { signInSchema, signUpSchema } from "../../helpers/joi";
 import { IUser } from "../../interfaces/user.interface";
 import { User } from "../../models/user.model";
 
@@ -28,11 +28,11 @@ class UserValidation {
     };
   }
 
-  public isBodyValidAdedeUser() {
+  public validationSignUpUser() {
     return (req: Request, _: Response, next: NextFunction) => {
       const { body } = req;
       try {
-        const { error } = addetUserSchema.validate(body);
+        const { error } = signUpSchema.validate(body);
         if (error) {
           throw new ApiError(error.message, 400);
         }
@@ -47,7 +47,37 @@ class UserValidation {
     return (req: Request, _: Response, next: NextFunction) => {
       const { body } = req;
       try {
-        const { error } = aditingSchema.validate(body);
+        const { error } = signUpSchema.validate(body);
+        if (error) {
+          throw new ApiError(error.message, 400);
+        }
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
+  }
+
+  public isBodyValidAdedeUser() {
+    return (req: Request, _: Response, next: NextFunction) => {
+      const { body } = req;
+      try {
+        const { error } = signUpSchema.validate(body);
+        if (error) {
+          throw new ApiError(error.message, 400);
+        }
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
+  }
+
+  public validationSignInUser() {
+    return (req: Request, _: Response, next: NextFunction) => {
+      const { body } = req;
+      try {
+        const { error } = signInSchema.validate(body);
         if (error) {
           throw new ApiError(error.message, 400);
         }
@@ -71,7 +101,7 @@ class UserValidation {
           });
         }
 
-        const { id } = jwt.verify(token, config.ACCESS_SECRET_KEY);
+        const { id } = jwt.verify(token, configs.ACCESS_SECRET_KEY);
         if (!id) {
           return res.status(401).json({
             message: "Not authorized",
