@@ -18,7 +18,18 @@ class TokenService {
     return { accessToken, refreshToken };
   }
 
-  public verifyToken(token: string): ITokenPayload {
+  public verifyAccesToken(token: string): ITokenPayload {
+    try {
+      return jsonwebtoken.verify(
+        token,
+        configs.ACCESS_SECRET_KEY,
+      ) as ITokenPayload;
+    } catch (e) {
+      throw new ApiError("Invalid token", 401);
+    }
+  }
+
+  public verifyRefreshToken(token: string): ITokenPayload {
     try {
       return jsonwebtoken.verify(
         token,

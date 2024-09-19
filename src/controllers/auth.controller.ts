@@ -39,7 +39,31 @@ class AuthController {
         });
       }
 
-      const { userId } = tokenService.verifyToken(token);
+      const { userId } = tokenService.verifyAccesToken(token);
+
+      if (!userId) {
+        return res.status(401).json({
+          message: "Not authorized",
+          clarification: "Token not have id",
+        });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(401).json({ message: "user not found" });
+      }
+
+      req.user = user;
+      next();
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async refreshToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.body.refreshToken;
+      const { userId } = tokenService.verifyRefreshToken(token);
 
       if (!userId) {
         return res.status(401).json({

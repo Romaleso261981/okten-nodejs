@@ -16,5 +16,6 @@ router.post(
   userValidation.isBodyValidAdedeUser(),
   authController.signIn,
 );
+router.post("/refresh", authController.refreshToken);
 
 export const authRouter = router;
