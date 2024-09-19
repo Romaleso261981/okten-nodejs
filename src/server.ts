@@ -6,6 +6,7 @@ import httpStatus from "http-status";
 import { ApiError } from "./errors/api-error";
 import { connectMongoDB } from "./helpers/connectDB";
 import { sendRes } from "./helpers/sendRes";
+import { authRouter } from "./routers/auth.router";
 import { usersRouter } from "./routers/usersRouter";
 
 export const app = express();
@@ -30,6 +31,7 @@ app.get("/", (_: Request, res: Response) => {
 });
 
 app.use("/users", usersRouter);
+app.use("/auth", authRouter);
 
 app.use(
   "*",

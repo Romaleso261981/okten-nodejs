@@ -7,4 +7,7 @@ export default {
   PORT: process.env.PORT,
   BD_URI: process.env.DB_URI,
   ACCESS_SECRET_KEY: process.env.ACCESS_SECRET_KEY,
+  ACCESS_REFRESH_KEY: process.env.ACCESS_REFRESH_KEY,
+  JWT_ACCESS_EXPIRATION: process.env.JWT_ACCESS_EXPIRATION,
+  JWT_REFRESH_EXPIRATION: process.env.JWT_REFRESH_EXPIRATION,
 };

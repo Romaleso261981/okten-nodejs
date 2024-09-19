@@ -2,7 +2,7 @@
 import { Server } from "http";
 import mongoose from "mongoose";
 
-import config from "../config";
+import config from "../configs";
 import { ApiError } from "../errors/api-error";
 import { app } from "../server";
 

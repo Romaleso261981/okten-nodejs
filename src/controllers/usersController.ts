@@ -6,7 +6,7 @@ import {
   getAllUsers,
   getSingleUser,
   updateUserHandler,
-} from "../services/user.service-mongoDB";
+} from "../services/user.service";
 
 class UserController {
   public async getAllUsers(_: Request, res: Response, next: NextFunction) {

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { isObjectIdOrHexString } from "mongoose";
 
-import config from "../../config";
+import config from "../../configs";
 import { ApiError } from "../../errors/api-error";
 import { addetUserSchema, aditingSchema } from "../../helpers/joi";
 import { IUser } from "../../interfaces/user.interface";
