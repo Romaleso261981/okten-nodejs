@@ -47,11 +47,58 @@ class AuthService {
     return { user, tokens };
   }
 
+  public async userIsAuth(dto: any): Promise<IUser> {
+    const { authorization = "" } = dto;
+    const [bearer, token] = authorization.split(" ");
+
+    if (bearer !== "Bearer" || !token) {
+      throw new ApiError("invalid authorization header", 404);
+    }
+
+    const { userId } = tokenService.verifyAccessToken(token);
+
+    if (!userId) {
+      throw new ApiError(
+        "invalid userId or token expired or wrong verifyAccesToken",
+        404,
+      );
+    }
+
+    const user = await userRepository.getById(userId);
+
+    if (!user) {
+      throw new ApiError("Not authorized", 401);
+    }
+
+    return user;
+  }
+
   private async isEmailExistOrThrow(email: string): Promise<void> {
     const user = await userRepository.getByEmail(email);
     if (user) {
       throw new ApiError("Email already exists", 409);
     }
+  }
+
+  public async refreshAccessToken(refreshToken: string): Promise<ITokenPair> {
+    const { userId } = tokenService.verifyRefreshToken(refreshToken);
+
+    if (!userId) {
+      throw new Error("Invalid token");
+    }
+
+    const user = userRepository.getById(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const tokens = tokenService.generateTokens({
+      userId: (await user)._id,
+      role: (await user).role,
+    });
+
+    return tokens as ITokenPair;
   }
 }
 

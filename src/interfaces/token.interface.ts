@@ -7,6 +7,11 @@ export interface IToken {
   _userId: string;
 }
 
+export interface ITokenPair {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface ITokenPayload {
   userId: string;
   role: RoleEnum;

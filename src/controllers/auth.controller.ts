@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { ISignIn, IUser } from "../interfaces/user.interface";
-import { User } from "../models/user.model";
 import { authService } from "../services/auth.service";
-import { tokenService } from "../services/token.service";
 
 class AuthController {
   public async signUp(req: Request, res: Response, next: NextFunction) {
@@ -26,34 +24,9 @@ class AuthController {
     }
   }
 
-  public async isAuthCheck(req: Request, res: Response, next: NextFunction) {
+  public async isAuthCheck(req: Request, _: Response, next: NextFunction) {
     try {
-      const { authorization = "" } = req.headers;
-      const [bearer, token] = authorization.split(" ");
-
-      if (bearer !== "Bearer" || !token) {
-        return res.status(401).json({
-          message: "Not authorized",
-          clarification:
-            "Please, provide a token in request authorization header",
-        });
-      }
-
-      const { userId } = tokenService.verifyAccesToken(token);
-
-      if (!userId) {
-        return res.status(401).json({
-          message: "Not authorized",
-          clarification: "Token not have id",
-        });
-      }
-
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(401).json({ message: "user not found" });
-      }
-
-      req.user = user;
+      req.user = await authService.userIsAuth(req.headers);
       next();
     } catch (e) {
       next(e);
@@ -62,23 +35,13 @@ class AuthController {
 
   public async refreshToken(req: Request, res: Response, next: NextFunction) {
     try {
-      const token = req.body.refreshToken;
-      const { userId } = tokenService.verifyRefreshToken(token);
-
-      if (!userId) {
-        return res.status(401).json({
-          message: "Not authorized",
-          clarification: "Token not have id",
-        });
-      }
-
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(401).json({ message: "user not found" });
-      }
-
-      req.user = user;
-      next();
+      const tokens = await authService.refreshAccessToken(
+        req.body.refreshToken,
+      );
+      return res.status(201).json({
+        status: "successful",
+        tokens,
+      });
     } catch (e) {
       next(e);
     }
