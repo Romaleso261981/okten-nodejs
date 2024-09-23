@@ -65,7 +65,7 @@ class AuthService {
 
     if (!userId) {
       throw new ApiError(
-        "invalid userId or token expired or wrong verifyAccesToken",
+        "invalid userId or token expired or wrong verifyAccessToken",
         404,
       );
     }
