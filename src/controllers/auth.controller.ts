@@ -24,6 +24,15 @@ class AuthController {
     }
   }
 
+  public async logOut(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await authService.logOut(req.headers.authorization);
+      res.status(201).json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   public async isAuthCheck(req: Request, _: Response, next: NextFunction) {
     try {
       req.user = await authService.userIsAuth(req.headers);

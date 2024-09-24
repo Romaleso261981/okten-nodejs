@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { isObjectIdOrHexString } from "mongoose";
 
 import configs from "../../configs";
 import { ApiError } from "../../errors/api-error";
@@ -15,19 +14,6 @@ declare module "express-serve-static-core" {
 }
 
 class UserValidation {
-  public isIdValid(key: string) {
-    return (req: Request, _: Response, next: NextFunction) => {
-      try {
-        if (!isObjectIdOrHexString(req.params[key])) {
-          throw new ApiError("Invalid ID", 400);
-        }
-        next();
-      } catch (e) {
-        next(e);
-      }
-    };
-  }
-
   public validationSignUpUser() {
     return (req: Request, _: Response, next: NextFunction) => {
       const { body } = req;

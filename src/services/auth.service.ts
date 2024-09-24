@@ -1,9 +1,12 @@
+import configs from "../configs";
+import { EmailTypeEnum } from "../enums/email-type.enum";
 import { ApiError } from "../errors/api-error";
 import { ITokenPair } from "../interfaces/token.interface";
 import { ISignIn, IUser } from "../interfaces/user.interface";
 import { commonMiddleware } from "../middlewares/common.middleware";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
+import { emailService } from "./email.service";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 
@@ -20,7 +23,10 @@ class AuthService {
       role: user.role,
     });
 
-    // await tokenRepository.create({ ...tokens, _userId: user._id });
+    await emailService.sendMail(EmailTypeEnum.WELCOME, configs.SMTP_EMAIL, {
+      name: user.name,
+    });
+
     return { user, tokens };
   }
 
@@ -51,6 +57,37 @@ class AuthService {
     await tokenRepository.create({ ...tokens, _userId: user._id });
 
     return { user, tokens };
+  }
+
+  public async logOut(authorization: string): Promise<void> {
+    const [bearer, token] = authorization.split(" ");
+
+    console.log("bearer", bearer);
+
+    if (!token) {
+      throw new ApiError("You are not authorized", 401);
+    }
+
+    const { userId } = commonMiddleware.verifyAccessToken(token);
+
+    if (!userId) {
+      throw new ApiError(
+        "invalid userId or token expired or wrong verifyAccessToken",
+        404,
+      );
+    }
+
+    const user = await userRepository.getById(userId);
+
+    if (!user) {
+      throw new ApiError("Not authorized", 401);
+    }
+
+    tokenRepository.deleteByUserId(userId);
+
+    await emailService.sendMail(EmailTypeEnum.LOG_OUT, configs.SMTP_EMAIL, {
+      name: user.name,
+    });
   }
 
   public async userIsAuth(dto: any): Promise<IUser> {
