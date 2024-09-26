@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable indent */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as jsonwebtoken from "jsonwebtoken";

@@ -67,9 +67,7 @@ class AuthService {
   }
 
   public async logOut(authorization: string): Promise<void> {
-    const [bearer, token] = authorization.split(" ");
-
-    console.log("bearer", bearer);
+    const token = authorization.split(" ")[1];
 
     if (!token) {
       throw new ApiError("You are not authorized", 401);
