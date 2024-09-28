@@ -14,6 +14,7 @@ class AuthController {
     try {
       const dto = req.body as IUser;
       const result = await authService.signUp(dto);
+
       res.status(201).json(result);
     } catch (e) {
       next(e);
@@ -98,11 +99,10 @@ class AuthController {
     next: NextFunction,
   ) {
     try {
-      const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
+      // const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
 
-      const userId = jwtPayload.userId;
+      // const userId = jwtPayload.userId;
 
-      console.log("userId", userId);
       // const user = await User.findById(userId);
       // const data = req.body;
       // console.log("data", data);

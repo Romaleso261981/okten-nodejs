@@ -54,6 +54,10 @@ class TokenService {
           secret = configs.ACTION_FORGOT_PASSWORD_SECRET;
           break;
 
+        case ActionTokenTypeEnum.VERIFY_EMAIL:
+          secret = configs.ACTION_VERIFY_SECRET;
+          break;
+
         default:
           throw new ApiError("Invalid token type", 400);
       }
@@ -78,7 +82,7 @@ class TokenService {
         expiresIn = configs.ACTION_FORGOT_PASSWORD_EXPIRATION;
         break;
       case ActionTokenTypeEnum.VERIFY_EMAIL:
-        secret = configs.ACTION_FORGOT_PASSWORD_SECRET;
+        secret = configs.ACTION_VERIFY_SECRET;
         expiresIn = configs.ACTION_VERIFY_EXPIRATION;
         break;
       default:

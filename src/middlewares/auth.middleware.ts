@@ -68,6 +68,7 @@ class AuthMiddleware {
     return async (req: Request, _: Response, next: NextFunction) => {
       try {
         const token = req.body.token as string;
+
         if (!token) {
           throw new ApiError("Token is not provided", 401);
         }

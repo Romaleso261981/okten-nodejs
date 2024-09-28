@@ -29,9 +29,22 @@ class AuthService {
       userId: user._id,
       role: user.role,
     });
+    await tokenRepository.create({ ...tokens, _userId: user._id });
 
-    await emailService.sendMail(EmailTypeEnum.WELCOME, configs.SMTP_EMAIL, {
+    const token = tokenService.generateActionTokens(
+      { userId: user._id, role: user.role },
+      ActionTokenTypeEnum.VERIFY_EMAIL,
+    );
+
+    await actionTokenRepository.create({
+      type: ActionTokenTypeEnum.VERIFY_EMAIL,
+      _userId: user._id,
+      token,
+    });
+
+    await emailService.sendMail(EmailTypeEnum.WELCOME, user.email, {
       name: user.name,
+      actionToken: token,
     });
 
     return { user, tokens };

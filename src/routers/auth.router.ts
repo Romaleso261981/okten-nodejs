@@ -30,13 +30,13 @@ router.put(
   authController.forgotPasswordSet,
 );
 
-router.post(
+router.put(
   "/change-password",
   authMiddleware.checkActionToken(ActionTokenTypeEnum.FORGOT_PASSWORD),
   authController.forgotPasswordSet,
 );
 
-router.post(
+router.put(
   "/verify",
   authMiddleware.checkActionToken(ActionTokenTypeEnum.VERIFY_EMAIL),
   authController.verify,
