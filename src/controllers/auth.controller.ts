@@ -91,6 +91,39 @@ class AuthController {
       next(e);
     }
   }
+
+  public async changePasswordSet(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
+
+      const userId = jwtPayload.userId;
+
+      console.log("userId", userId);
+      // const user = await User.findById(userId);
+      // const data = req.body;
+      // console.log("data", data);
+      res.status(200).json({
+        status: "successful",
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async verify(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
+
+      await authService.verify(jwtPayload);
+      res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const authController = new AuthController();

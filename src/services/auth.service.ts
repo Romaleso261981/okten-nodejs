@@ -147,6 +147,7 @@ class AuthService {
 
   public async forgotPasswordSendEmail(dto: IResetPasswordSend): Promise<void> {
     const user = await userRepository.getByEmail(dto.email);
+
     if (!user) {
       throw new ApiError("User not found", 404);
     }
@@ -155,6 +156,7 @@ class AuthService {
       { userId: user._id, role: user.role },
       ActionTokenTypeEnum.FORGOT_PASSWORD,
     );
+
     await actionTokenRepository.create({
       type: ActionTokenTypeEnum.FORGOT_PASSWORD,
       _userId: user._id,
@@ -172,14 +174,26 @@ class AuthService {
     dto: IResetPasswordSet,
     jwtPayload: ITokenPayload,
   ): Promise<void> {
-    const password = await passwordService.hashPassword(dto.password);
-    await userRepository.updateById(jwtPayload.userId, { password });
+    const heshedPassword = await passwordService.hashPassword(dto.password);
+
+    await userRepository.updateById(jwtPayload.userId, {
+      password: heshedPassword,
+    });
 
     await actionTokenRepository.deleteManyByParams({
       _userId: jwtPayload.userId,
       type: ActionTokenTypeEnum.FORGOT_PASSWORD,
     });
+
     await tokenRepository.deleteManyByParams({ _userId: jwtPayload.userId });
+  }
+
+  public async verify(jwtPayload: ITokenPayload): Promise<void> {
+    await userRepository.updateById(jwtPayload.userId, { isVerified: true });
+    await actionTokenRepository.deleteManyByParams({
+      _userId: jwtPayload.userId,
+      type: ActionTokenTypeEnum.VERIFY_EMAIL,
+    });
   }
 }
 
