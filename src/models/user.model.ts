@@ -40,6 +40,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    lastLogin: {
+      type: Number,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -64,8 +64,14 @@ class UserRepository {
     return await User.findOne({ email }).select("+password");
   }
 
-  public async updateById(userId: string, dto: Partial<IUser>): Promise<IUser> {
+  public async updateById<T>(userId: string, dto: T): Promise<IUser> {
     return await User.findByIdAndUpdate(userId, dto, { new: true });
+  }
+
+  public async findUsersNotLoggedInSince(
+    date30DaysAgo: Date,
+  ): Promise<IUser[]> {
+    return await User.find({ lastLogin: { $lt: date30DaysAgo } });
   }
 }
 

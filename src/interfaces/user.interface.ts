@@ -10,6 +10,7 @@ export interface IUser {
   isVerified: boolean;
   isDeleted: boolean;
   phone?: string;
+  lastLogin: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

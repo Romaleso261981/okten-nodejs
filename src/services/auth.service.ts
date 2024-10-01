@@ -68,6 +68,10 @@ class AuthService {
       throw new ApiError("Invalid credentials", 401);
     }
 
+    const lastLogin = Date.now();
+
+    await userRepository.updateById<number>(user._id, lastLogin);
+
     await tokenRepository.deleteByUserId(user._id);
 
     const tokens = tokenService.generateTokens({
@@ -190,7 +194,7 @@ class AuthService {
   ): Promise<void> {
     const heshedPassword = await passwordService.hashPassword(dto.password);
 
-    await userRepository.updateById(jwtPayload.userId, {
+    await userRepository.updateById<Partial<IUser>>(jwtPayload.userId, {
       password: heshedPassword,
     });
 
@@ -203,7 +207,9 @@ class AuthService {
   }
 
   public async verify(jwtPayload: ITokenPayload): Promise<void> {
-    await userRepository.updateById(jwtPayload.userId, { isVerified: true });
+    await userRepository.updateById<Partial<IUser>>(jwtPayload.userId, {
+      isVerified: true,
+    });
     await actionTokenRepository.deleteManyByParams({
       _userId: jwtPayload.userId,
       type: ActionTokenTypeEnum.VERIFY_EMAIL,
@@ -224,7 +230,9 @@ class AuthService {
     }
 
     const password = await passwordService.hashPassword(dto.password);
-    await userRepository.updateById(jwtPayload.userId, { password });
+    await userRepository.updateById<Partial<IUser>>(jwtPayload.userId, {
+      password,
+    });
     await tokenRepository.deleteManyByParams({ _userId: jwtPayload.userId });
   }
 }
