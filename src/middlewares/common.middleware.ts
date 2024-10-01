@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
+import { ObjectSchema } from "joi";
 import * as jsonwebtoken from "jsonwebtoken";
 import { isObjectIdOrHexString } from "mongoose";
 
@@ -37,6 +38,17 @@ class CommonMiddleware {
     } catch (e) {
       throw new ApiError("Invalid token", 401);
     }
+  }
+
+  public isBodyValid(validator: ObjectSchema) {
+    return async (req: Request, _: Response, next: NextFunction) => {
+      try {
+        req.body = await validator.validateAsync(req.body);
+        next();
+      } catch (e) {
+        next(new ApiError(e.details[0].message, 400));
+      }
+    };
   }
 }
 

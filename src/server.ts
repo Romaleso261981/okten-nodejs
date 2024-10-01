@@ -3,6 +3,7 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
+import { cronRunner } from "./crons";
 import { ApiError } from "./errors/api-error";
 import { connectMongoDB } from "./helpers/connectDB";
 import { sendRes } from "./helpers/sendRes";
@@ -20,6 +21,8 @@ app.use("*", (req: Request, _, next: NextFunction) => {
 });
 
 connectMongoDB();
+
+cronRunner();
 
 app.get("/", (_: Request, res: Response) => {
   sendRes(res, {

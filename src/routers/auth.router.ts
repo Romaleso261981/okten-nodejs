@@ -30,10 +30,11 @@ router.put(
   authController.forgotPasswordSet,
 );
 
-router.put(
+router.post(
   "/change-password",
-  authMiddleware.checkActionToken(ActionTokenTypeEnum.FORGOT_PASSWORD),
-  authController.forgotPasswordSet,
+  authMiddleware.checkAccessToken,
+  // commonMiddleware.isBodyValid(UserValidator.changePassword),
+  authController.changePassword,
 );
 
 router.put(

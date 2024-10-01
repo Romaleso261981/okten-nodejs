@@ -25,11 +25,7 @@ class UserRepository {
   }
 
   public async getById(userId: string): Promise<IUser | null> {
-    const result = await User.findById(userId);
-    if (!result) {
-      throw new Error("User not found !");
-    }
-    return result;
+    return await User.findById(userId).select("+password");
   }
 
   public async deleteUser(userId: string): Promise<IUser> {
