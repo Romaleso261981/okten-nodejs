@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console */
 import * as jsonwebtoken from "jsonwebtoken";
 
 import configs from "../configs";
@@ -85,8 +85,8 @@ class TokenService {
         expiresIn = configs.ACTION_VERIFY_EXPIRATION;
         break;
       case ActionTokenTypeEnum.CHANGE_PASSWORD:
-        secret = configs.CHANGE_PASSWORD_SECRET;
-        expiresIn = configs.CHANGE_PASSWORD_EXPIRATION;
+        secret = configs.ACTION_CHANGE_PASSWORD_SECRET;
+        expiresIn = configs.ACTION_CHANGE_PASSWORD_EXPIRATION;
         break;
       default:
         throw new ApiError("Invalid token type", 400);

@@ -13,8 +13,8 @@ const handler = async () => {
     const users = await userRepository.findUsersNotLoggedInSince(date30DaysAgo);
 
     for (const user of users) {
-      await emailService.sendMail(EmailTypeEnum.LOG_OUT, user.email, {
-        name: user.name,
+      await emailService.sendMail(EmailTypeEnum.OLD_VISIT, user.email, {
+        email: user.email,
       });
     }
 
@@ -27,6 +27,6 @@ const handler = async () => {
 };
 
 export const sendEmailToInactiveUsersCronJob = new CronJob(
-  "10 * * * * *",
+  "0 0 * * *",
   handler,
 );
