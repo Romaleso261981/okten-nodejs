@@ -2,8 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 
 import { ITokenPayload } from "../interfaces/token.interface";
+import { userPresenter } from "../presenters/user.presenter";
 import {
   createNewUser,
+  deleteAvatar,
   deleteUserById,
   getAllUsers,
   getSingleUser,
@@ -92,8 +94,20 @@ class UserController {
       const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
       const avatar = req.files.avatar as UploadedFile;
       const user = await uploadAvatar(jwtPayload, avatar);
-      // const result = userPresenter.toPublicResDto(user);
-      res.status(201).json(user);
+      const response = userPresenter.toPrivateResponseDto(user);
+      res.status(201).json(response);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async deleteAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
+
+      const user = await deleteAvatar(jwtPayload.userId);
+      const response = userPresenter.toPrivateResponseDto(user);
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }

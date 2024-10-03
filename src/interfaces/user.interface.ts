@@ -16,6 +16,18 @@ export interface IUser {
   updatedAt?: Date;
 }
 
+export interface IPrivateUser {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  age: number;
+  role: RoleEnum;
+  avatar: string;
+  isDeleted: boolean;
+  isVerified: boolean;
+}
+
 export type ISignIn = Pick<IUser, "email" | "password">;
 export type IResetPasswordSend = Pick<IUser, "email">;
 export type IResetPasswordSet = Pick<IUser, "password"> & { token: string };

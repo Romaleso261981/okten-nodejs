@@ -34,15 +34,26 @@ export const uploadAvatar = async (
   file: UploadedFile,
 ): Promise<IUser> => {
   const user = await userRepository.getById(jwtPayload.userId);
-  const avatar = await s3Service.uploadFile(
+
+  if (user.avatar) {
+    await s3Service.deleteFile(user.avatar);
+  }
+
+  const filePath = await s3Service.uploadFile(
     file,
     FileItemTypeEnum.USER,
     user._id,
   );
 
-  const updatedUser = await userRepository.updateById(user._id, { avatar });
+  return await userRepository.updateById(user._id, {
+    avatar: filePath,
+  });
+};
+
+export const deleteAvatar = async (userId: string): Promise<IUser> => {
+  const user = await getSingleUser(userId);
   if (user.avatar) {
-    // await s3Service.deleteFile(user.avatar); TODO
+    await s3Service.deleteFile(user.avatar);
   }
-  return updatedUser;
+  return await userRepository.updateById(userId, { avatar: null });
 };
