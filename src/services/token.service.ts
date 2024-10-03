@@ -22,17 +22,6 @@ class TokenService {
     return { accessToken, refreshToken };
   }
 
-  public verifyRefreshToken(refreshToken: string): ITokenPayload {
-    try {
-      return jsonwebtoken.verify(
-        refreshToken,
-        configs.ACCESS_REFRESH_KEY,
-      ) as ITokenPayload;
-    } catch (e) {
-      throw new ApiError("Invalid Refresh token", 400);
-    }
-  }
-
   public verifyToken(
     token: string,
     type: TokenTypeEnum | ActionTokenTypeEnum,

@@ -1,6 +1,7 @@
 import configs from "../configs";
 import { ActionTokenTypeEnum } from "../enums/action-token-type.enum";
 import { EmailTypeEnum } from "../enums/email-type.enum";
+import { TokenTypeEnum } from "../enums/token-type.enum";
 import { ApiError } from "../errors/api-error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import {
@@ -148,7 +149,10 @@ class AuthService {
   }
 
   public async refreshAccessToken(refreshToken: string): Promise<ITokenPair> {
-    const { userId } = tokenService.verifyRefreshToken(refreshToken);
+    const { userId } = tokenService.verifyToken(
+      refreshToken,
+      TokenTypeEnum.REFRESH,
+    );
 
     const user = await userRepository.getById(userId);
 
