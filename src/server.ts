@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import fileUpload from "express-fileupload";
 import httpStatus from "http-status";
 
 import { cronRunner } from "./crons";
@@ -15,6 +16,8 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
+
 app.use("*", (req: Request, _, next: NextFunction) => {
   console.log(`${req.method} ${req.originalUrl}`);
   next();

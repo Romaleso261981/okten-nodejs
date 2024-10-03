@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import { UploadedFile } from "express-fileupload";
 
+import { ITokenPayload } from "../interfaces/token.interface";
 import {
   createNewUser,
   deleteUserById,
   getAllUsers,
   getSingleUser,
   updateUserHandler,
+  uploadAvatar,
 } from "../services/user.service";
 
 class UserController {
@@ -79,6 +82,18 @@ class UserController {
         newUser,
         status: "successful",
       });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async uploadAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
+      const avatar = req.files.avatar as UploadedFile;
+      const user = await uploadAvatar(jwtPayload, avatar);
+      // const result = userPresenter.toPublicResDto(user);
+      res.status(201).json(user);
     } catch (e) {
       next(e);
     }

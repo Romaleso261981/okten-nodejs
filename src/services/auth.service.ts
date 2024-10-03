@@ -21,6 +21,13 @@ import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 
 class AuthService {
+  private async isEmailExistOrThrow(email: string): Promise<void> {
+    const user = await userRepository.getByEmail(email);
+    if (user) {
+      throw new ApiError("Email already exists", 409);
+    }
+  }
+
   public async signUp(
     dto: Partial<IUser>,
   ): Promise<{ user: IUser; tokens: ITokenPair }> {
@@ -139,13 +146,6 @@ class AuthService {
     }
 
     return user;
-  }
-
-  private async isEmailExistOrThrow(email: string): Promise<void> {
-    const user = await userRepository.getByEmail(email);
-    if (user) {
-      throw new ApiError("Email already exists", 409);
-    }
   }
 
   public async refreshAccessToken(refreshToken: string): Promise<ITokenPair> {
