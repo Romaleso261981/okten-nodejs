@@ -41,8 +41,7 @@ usersRouter.put(
 usersRouter.put(
   "/me/avatar",
   authMiddleware.checkAccessToken,
-  fileMiddleware.isFileValid(),
-  // authController.isAuthCheck,
+  fileMiddleware.isAvatarValid,
   userController.uploadAvatar,
 );
 
