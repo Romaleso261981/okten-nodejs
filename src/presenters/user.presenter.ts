@@ -1,8 +1,13 @@
 import configs from "../configs";
-import { IPrivateUser, IUser } from "../interfaces/user.interface";
+import {
+  IUser,
+  IUserListQuery,
+  IUserListResponse,
+  IUserResponse,
+} from "../interfaces/user.interface";
 
 class UserPresenter {
-  toPublicResDto(entity: IUser) {
+  public toPublicResDto(entity: IUser): IUserResponse {
     return {
       _id: entity._id,
       name: entity.name,
@@ -17,17 +22,28 @@ class UserPresenter {
     };
   }
 
-  toPrivateResponseDto(user: IUser): IPrivateUser {
+  public toPrivateResponseDto(user: IUser): IUserResponse {
     return {
       _id: user._id,
       name: user.name,
       email: user.email,
-      phone: user.phone,
       age: user.age,
       role: user.role,
       avatar: user.avatar ? `${configs.AWS_S3_ENDPOINT}/${user.avatar}` : null,
       isDeleted: user.isDeleted,
       isVerified: user.isVerified,
+    };
+  }
+
+  public toListResDto(
+    entities: IUser[],
+    total: number,
+    query: IUserListQuery,
+  ): IUserListResponse {
+    return {
+      data: entities.map(this.toPublicResDto),
+      total,
+      ...query,
     };
   }
 }

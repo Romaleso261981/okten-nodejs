@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 
 import { ITokenPayload } from "../interfaces/token.interface";
+import { IUserListQuery } from "../interfaces/user.interface";
 import { userPresenter } from "../presenters/user.presenter";
 import {
   createNewUser,
@@ -14,10 +15,10 @@ import {
 } from "../services/user.service";
 
 class UserController {
-  public async getAllUsers(_: Request, res: Response, next: NextFunction) {
+  public async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      // const users = await userRepository.getList();
-      const users = await getAllUsers();
+      const query = req.query as unknown as IUserListQuery;
+      const users = await getAllUsers(query);
 
       return res.status(201).json({
         status: "successful",

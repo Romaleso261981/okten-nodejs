@@ -2,8 +2,11 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import fileUpload from "express-fileupload";
+import { createServer } from "http";
 import httpStatus from "http-status";
+import swaggerUi from "swagger-ui-express";
 
+import swaggerDocument from "../docs/swagger.json";
 import { cronRunner } from "./crons";
 import { ApiError } from "./errors/api-error";
 import { connectMongoDB } from "./helpers/connectDB";
@@ -11,21 +14,25 @@ import { sendRes } from "./helpers/sendRes";
 import { authRouter } from "./routers/auth.router";
 import { usersRouter } from "./routers/usersRouter";
 
-export const app = express();
+const app = express();
+
+export const server = createServer(app);
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 
+connectMongoDB();
+
+cronRunner();
+
 app.use("*", (req: Request, _, next: NextFunction) => {
   console.log(`${req.method} ${req.originalUrl}`);
   next();
 });
 
-connectMongoDB();
-
-cronRunner();
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/", (_: Request, res: Response) => {
   sendRes(res, {

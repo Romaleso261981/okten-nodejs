@@ -2,12 +2,20 @@ import { UploadedFile } from "express-fileupload";
 
 import { FileItemTypeEnum } from "../enums/file-item-type.enum";
 import { ITokenPayload } from "../interfaces/token.interface";
-import { IUser } from "../interfaces/user.interface";
+import {
+  IUser,
+  IUserListQuery,
+  IUserListResponse,
+} from "../interfaces/user.interface";
+import { userPresenter } from "../presenters/user.presenter";
 import { userRepository } from "../repositories/user.repository";
 import { s3Service } from "./s3.service";
 
-export const getAllUsers = async (): Promise<IUser[] | null> => {
-  return await userRepository.getList();
+export const getAllUsers = async (
+  query: IUserListQuery,
+): Promise<IUserListResponse> => {
+  const [entities, total] = await userRepository.getList(query);
+  return userPresenter.toListResDto(entities, total, query);
 };
 
 export const createNewUser = async (dto: IUser): Promise<IUser> => {

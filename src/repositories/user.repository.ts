@@ -1,13 +1,49 @@
-import { IUser } from "../interfaces/user.interface";
+/* eslint-disable no-console */
+import { FilterQuery } from "mongoose";
+
+import { IUser, IUserListQuery } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
 class UserRepository {
-  public async getList(): Promise<IUser[]> {
-    const result = await User.find();
-    if (!result) {
-      throw new Error("Users retrieved failed");
+  public async getList(query: IUserListQuery): Promise<[IUser[], number]> {
+    const filterObj: FilterQuery<IUser> = {};
+
+    // Перетворюємо ключі, щоб працювали такі параметри як age[gte], age[lt] тощо
+    const queryStr = JSON.stringify(query);
+    const queryObj = JSON.parse(
+      queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`),
+    );
+
+    const { limit = 5, page = 1, search } = queryObj as IUserListQuery;
+
+    if (search) {
+      filterObj.name = { $regex: search, $options: "i" };
     }
-    return result;
+
+    const skip = limit * (page - 1);
+
+    // Динамічне сортування
+    const sortObj: { [key: string]: number } = {};
+    // if (orderBy) {
+    //   if (orderBy === UserListOrderByEnum.AGE_GTE) {
+    //     filterObj.age = { $gte: queryObj.order };
+    //   } else if (orderBy === UserListOrderByEnum.AGE_LTE) {
+    //     filterObj.age = { $lte: queryObj.order };
+    //   } else if (orderBy === UserListOrderByEnum.AGE_GT) {
+    //     filterObj.age = { $gt: queryObj.order };
+    //   } else if (orderBy === UserListOrderByEnum.AGE_LT) {
+    //     filterObj.age = { $lt: queryObj.order };
+    //   } else {
+    //     throw new ApiError("Invalid orderBy", 400);
+    //   }
+    // }
+
+    console.log("filterObj", filterObj);
+
+    return await Promise.all([
+      User.find(sortObj).limit(limit).skip(skip),
+      User.countDocuments(filterObj),
+    ]);
   }
 
   public async create(dto: Partial<IUser>): Promise<IUser> {

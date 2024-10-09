@@ -9,7 +9,12 @@ import { userValidation } from "../middlewares/validations/user.validation";
 
 const usersRouter = express.Router();
 
-usersRouter.get("/", authController.isAuthCheck, userController.getAllUsers);
+usersRouter.get(
+  "/",
+  // authController.isAuthCheck,
+  // commonMiddleware.isQueryValid(UserValidator.listQuery),
+  userController.getAllUsers,
+);
 usersRouter.get(
   "/me",
   commonMiddleware.isIdValid("userId"),

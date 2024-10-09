@@ -1,10 +1,7 @@
 /* eslint-disable no-console */
-import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { app } from "../server";
-
-export const server = createServer(app);
+import { server } from "../server";
 
 const io = new Server(server, { cors: { origin: "*" } });
 

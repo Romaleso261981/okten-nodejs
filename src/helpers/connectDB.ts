@@ -2,15 +2,16 @@
 
 import mongoose from "mongoose";
 
-import config from "../configs";
+import configs from "../configs";
 import { ApiError } from "../errors/api-error";
-import { server } from "./socket";
+import { server } from "../server";
 
 export async function connectMongoDB() {
   try {
-    await mongoose.connect(config.BD_URI);
-    server.listen(config.PORT, (): void => {
-      console.log(`Your server is running on http://localhost:${config.PORT}`);
+    await mongoose.connect(configs.BD_URI);
+    console.log("MongoDB connected successfully.");
+    server.listen(configs.PORT, (): void => {
+      console.log(`Your server is running on http://localhost:${configs.PORT}`);
     });
   } catch (error) {
     throw new ApiError("Database Connection Error", error);

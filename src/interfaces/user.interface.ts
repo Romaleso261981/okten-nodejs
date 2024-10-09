@@ -1,4 +1,5 @@
 import { RoleEnum } from "../enums/role.enum";
+import { UserListOrderByEnum } from "../enums/user-list-order-by.enum";
 
 export interface IUser {
   _id?: string;
@@ -11,24 +12,39 @@ export interface IUser {
   isDeleted: boolean;
   phone?: string;
   avatar?: string;
-  lastLogin: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface IPrivateUser {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  age: number;
-  role: RoleEnum;
-  avatar: string;
-  isDeleted: boolean;
-  isVerified: boolean;
+export type ISignIn = Pick<IUser, "email" | "password">;
+
+export type IResetPasswordSend = Pick<IUser, "email">;
+
+export type IResetPasswordSet = Pick<IUser, "password"> & { token: string };
+
+export type IChangePassword = Pick<IUser, "password"> & { oldPassword: string };
+
+export interface IUserListQuery {
+  limit?: number;
+  page?: number;
+  search?: string;
+  order?: number;
+  orderBy?: UserListOrderByEnum;
 }
 
-export type ISignIn = Pick<IUser, "email" | "password">;
-export type IResetPasswordSend = Pick<IUser, "email">;
-export type IResetPasswordSet = Pick<IUser, "password"> & { token: string };
-export type IChangePassword = Pick<IUser, "password"> & { oldPassword: string };
+export type IUserResponse = Pick<
+  IUser,
+  | "_id"
+  | "name"
+  | "email"
+  | "age"
+  | "role"
+  | "avatar"
+  | "isDeleted"
+  | "isVerified"
+>;
+
+export interface IUserListResponse {
+  data: IUserResponse[];
+  total: number;
+}
