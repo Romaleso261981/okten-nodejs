@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Romaleso261981/okten-nodejs#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.662.0",
+    "@types/swagger-ui-express": "^4.1.6",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "cron": "^3.1.7",
@@ -29,12 +30,12 @@
     "http-status": "^1.7.4",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "@types/swagger-ui-express": "^4.1.6",
     "mongoose": "^8.6.2",
     "nodemailer": "^6.9.15",
-     "swagger-ui-express": "^5.0.1",
     "nodemailer-express-handlebars": "6.1.2",
-    "socket.io": "^4.8.0"
+    "puppeteer": "^23.5.2",
+    "socket.io": "^4.8.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

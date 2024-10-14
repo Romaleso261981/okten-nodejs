@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { FilterQuery } from "mongoose";
 
+import { UserListOrderByEnum } from "../enums/user-list-order-by.enum";
+import { ApiError } from "../errors/api-error";
 import { IUser, IUserListQuery } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
@@ -14,7 +16,13 @@ class UserRepository {
       queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`),
     );
 
-    const { limit = 5, page = 1, search } = queryObj as IUserListQuery;
+    const {
+      limit = 5,
+      page = 1,
+      search,
+      orderBy,
+      order,
+    } = queryObj as IUserListQuery;
 
     if (search) {
       filterObj.name = { $regex: search, $options: "i" };
@@ -22,26 +30,26 @@ class UserRepository {
 
     const skip = limit * (page - 1);
 
-    // Динамічне сортування
-    const sortObj: { [key: string]: number } = {};
-    // if (orderBy) {
-    //   if (orderBy === UserListOrderByEnum.AGE_GTE) {
-    //     filterObj.age = { $gte: queryObj.order };
-    //   } else if (orderBy === UserListOrderByEnum.AGE_LTE) {
-    //     filterObj.age = { $lte: queryObj.order };
-    //   } else if (orderBy === UserListOrderByEnum.AGE_GT) {
-    //     filterObj.age = { $gt: queryObj.order };
-    //   } else if (orderBy === UserListOrderByEnum.AGE_LT) {
-    //     filterObj.age = { $lt: queryObj.order };
-    //   } else {
-    //     throw new ApiError("Invalid orderBy", 400);
-    //   }
-    // }
+    console.log("orderBy", orderBy);
+
+    if (orderBy) {
+      if (orderBy === UserListOrderByEnum.AGE_GTE) {
+        filterObj.age = { $gte: order };
+      } else if (orderBy === UserListOrderByEnum.AGE_LTE) {
+        filterObj.age = { $lte: order };
+      } else if (orderBy === UserListOrderByEnum.AGE_GT) {
+        filterObj.age = { $gt: order };
+      } else if (orderBy === UserListOrderByEnum.AGE_LT) {
+        filterObj.age = { $lt: order };
+      } else {
+        throw new ApiError("Invalid orderBy", 400);
+      }
+    }
 
     console.log("filterObj", filterObj);
 
     return await Promise.all([
-      User.find(sortObj).limit(limit).skip(skip),
+      User.find(filterObj).limit(limit).skip(skip),
       User.countDocuments(filterObj),
     ]);
   }
